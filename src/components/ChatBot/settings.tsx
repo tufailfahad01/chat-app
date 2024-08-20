@@ -4,8 +4,10 @@ const ChatBotStyles = {
     background: "#F24769", // Background color for the chat box
   },
   botBubbleStyle: {
-    background: "#F24769", // Background color for message bubbles
-    color: "#fff", // Text color for message bubbles
+    // background: "#F24769", // Background color for message bubbles
+    border: '1px solid #F24769',
+    background: '#ffffff',
+    color: "#000000", // Text color for message bubbles
   },
   botOptionStyle: {
     border: "1px solid #F24769", // Color for options
