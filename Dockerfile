@@ -13,9 +13,14 @@ COPY . .
 # run npm install to install dependencies
 RUN npm install
 
-# expose port 3000
-EXPOSE 3001
+EXPOSE 3001 3002
+
+# Start both the application and the proxy server
+CMD ["npx", "concurrently", "\"npm run start\"", "\"node proxy.js\""]
+
+# # expose port 3000
+# EXPOSE 3001
 
 
-# npm run start to run the app
-CMD [ "npm","run","start" ]
+# # npm run start to run the app
+# CMD [ "npm","run","start" ]

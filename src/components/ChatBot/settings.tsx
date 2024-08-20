@@ -34,6 +34,7 @@ const ChatBotStyles = {
   tooltipStyle: {
     background: "#F24769",
     color: "white",
+    fontSize: '12px'
   },
   userBubbleStyle: {
     background: "#F24769",

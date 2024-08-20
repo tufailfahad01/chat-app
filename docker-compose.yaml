@@ -18,3 +18,13 @@ services:
       - .:/app
       # this is to ignore the node_modules directory in the project directory because it is too large to store in the container which will slow down the container
       - /app/node_modules
+  proxy-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "node proxy.js"
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/app
+      - /app/node_modules

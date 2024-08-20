@@ -3,6 +3,18 @@ import ChatBot from "react-chatbotify";
 
 import { ChatBotSettings, ChatBotStyles } from "./settings";
 import "./index.css";
+import axios from "axios";
+
+const DottedLoader = () => {
+  return (
+    <div className="dotted-loader">
+      {/* <div className="dot"></div>
+      <div className="dot"></div>
+      <div className="dot"></div> */}
+      <div style={{color:'#D3D3D3', fontSize:'12px'}}>Agent is typing......</div>
+    </div>
+  );
+};
 
 /**
  * MyChatBot component is a functional component that renders a chatbot using the
@@ -18,8 +30,11 @@ const CustomChatBot = ({ onChatToggle }: any) => {
     "Examples",
     "Github",
     "Discord",
-    "Agent",
+    "Ask Agent?",
   ]);
+
+  const [agentResponse, setAgentResponse] = useState(null); // State to store API response
+
 
   // Define the chatbot's flow.
   const flow = {
@@ -31,7 +46,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
         "Hello, 👋! Welcome to Gender GP, I'm excited that you are using our " +
         "chatbot 😊!",
       // Set a transition duration for the message.
-      transition: { duration: 1000 },
+      transition: { duration: 1500 },
       // Set the next state to show options.
       path: "show_options",
     },
@@ -98,9 +113,33 @@ const CustomChatBot = ({ onChatToggle }: any) => {
           case "Discord":
             link = "https://discord.gg/6R4DK4G5Zh";
             break;
-          case "Agent":
-            link = "https://discord.gg/6R4DK4G5Zh";
-            break;
+          case "Ask Agent?":
+            await params.injectMessage(
+              <div id="loader-wrapper">< DottedLoader /></div>
+            );
+
+            // Call the API when "Agent" is selected
+            try {
+              const response = await axios.get(
+                "http://localhost:3002/chat",
+                {
+                  headers: {
+                    Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
+                  },
+                }
+              );
+              document.getElementById("loader-wrapper")?.remove();
+              setAgentResponse(response.data); // Save the response in state
+              await params.injectMessage(
+                "I've received a response from the Agent. What would you like to do next?"
+              );
+            } catch (error) {
+              document.getElementById("loader-wrapper")?.remove();
+              await params.injectMessage(
+                "Sorry, I couldn't reach the Agent at this time."
+              );
+            }
+            return "repeat";
           default:
             return "unknown_input";
         }
