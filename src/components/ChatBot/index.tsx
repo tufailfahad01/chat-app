@@ -144,11 +144,18 @@ const CustomChatBot = ({ onChatToggle }: any) => {
             const message = params.userInput;
             await params.injectMessage("Sit tight! I'll send you right there!");
             try {
-              const response = await axios.get("http://localhost:3002/chat", {
-                headers: {
-                  Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
+              const response = await axios.post(
+                "http://localhost:3002/message",
+                {
+                  chat_history: [],
+                  query: "I want to transition and I am 19 years old",
                 },
-              });
+                {
+                  headers: {
+                    Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
+                  },
+                }
+              );
               setAgentResponse(response.data); // Save the response in state
               await params.injectMessage(
                 "I've received a response from the Agent. What would you like to do next?"
@@ -158,7 +165,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
                 "Sorry, I couldn't reach the Agent at this time."
               );
             }
-            // return "unknown_input";
+          // return "unknown_input";
         }
         // Inject a message and return the next state.
         return "repeat";
