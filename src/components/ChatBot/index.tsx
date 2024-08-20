@@ -11,7 +11,9 @@ const DottedLoader = () => {
       {/* <div className="dot"></div>
       <div className="dot"></div>
       <div className="dot"></div> */}
-      <div style={{color:'#D3D3D3', fontSize:'12px'}}>Agent is typing......</div>
+      <div style={{ color: "#D3D3D3", fontSize: "12px" }}>
+        Agent is typing......
+      </div>
     </div>
   );
 };
@@ -34,7 +36,6 @@ const CustomChatBot = ({ onChatToggle }: any) => {
   ]);
 
   const [agentResponse, setAgentResponse] = useState(null); // State to store API response
-
 
   // Define the chatbot's flow.
   const flow = {
@@ -115,19 +116,18 @@ const CustomChatBot = ({ onChatToggle }: any) => {
             break;
           case "Ask Agent?":
             await params.injectMessage(
-              <div id="loader-wrapper">< DottedLoader /></div>
+              <div id="loader-wrapper">
+                <DottedLoader />
+              </div>
             );
 
             // Call the API when "Agent" is selected
             try {
-              const response = await axios.get(
-                "http://localhost:3002/chat",
-                {
-                  headers: {
-                    Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
-                  },
-                }
-              );
+              const response = await axios.get("http://localhost:3002/chat", {
+                headers: {
+                  Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
+                },
+              });
               document.getElementById("loader-wrapper")?.remove();
               setAgentResponse(response.data); // Save the response in state
               await params.injectMessage(
@@ -141,10 +141,26 @@ const CustomChatBot = ({ onChatToggle }: any) => {
             }
             return "repeat";
           default:
-            return "unknown_input";
+            const message = params.userInput;
+            await params.injectMessage("Sit tight! I'll send you right there!");
+            try {
+              const response = await axios.get("http://localhost:3002/chat", {
+                headers: {
+                  Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
+                },
+              });
+              setAgentResponse(response.data); // Save the response in state
+              await params.injectMessage(
+                "I've received a response from the Agent. What would you like to do next?"
+              );
+            } catch (error) {
+              await params.injectMessage(
+                "Sorry, I couldn't reach the Agent at this time."
+              );
+            }
+            // return "unknown_input";
         }
         // Inject a message and return the next state.
-        await params.injectMessage("Sit tight! I'll send you right there!");
         return "repeat";
       },
     },
@@ -160,7 +176,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
   };
   // Render the chatbot using the defined settings and flow.
   return (
-    <ChatBot  settings={ChatBotSettings} flow={flow} styles={ChatBotStyles} />
+    <ChatBot settings={ChatBotSettings} flow={flow} styles={ChatBotStyles} />
   );
 };
 
