@@ -47,6 +47,10 @@ const ChatBotStyles = {
   chatButtonStyle: {
     background: "#F24769",
   },
+  closeChatIconStyle: {
+    width: '20px',
+    height: '20px'
+  }
 };
 
 const ChatBotSettings: any = {
