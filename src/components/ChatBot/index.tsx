@@ -17,6 +17,16 @@ const DottedLoader = () => {
     </div>
   );
 };
+const UserMessage = ({ text }: any) => {
+  return <div className="user-message-bubble">{text}</div>;
+};
+
+// Component for bot messages
+const BotMessage = ({ text }: any) => {
+  return <div className="bot-message-bubble">{text}</div>;
+};
+
+
 
 /**
  * MyChatBot component is a functional component that renders a chatbot using the
@@ -36,7 +46,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
   ]);
 
   const [agentResponse, setAgentResponse] = useState(null); // State to store API response
-
+  const [messages, setMessages] = useState(['hello','how are you']);
   // Define the chatbot's flow.
   const flow = {
     /**
@@ -49,11 +59,38 @@ const CustomChatBot = ({ onChatToggle }: any) => {
       // Set a transition duration for the message.
       transition: { duration: 1500 },
       // Set the next state to show options.
-      path: "show_options",
+      // path: "show_options",
+      path: async (params: any) => {
+        await params.injectMessage(
+          <div className="chat-container">
+            {messages.map((message, index) => {
+              return index % 2 == 0 ? (
+                <UserMessage key={index} text={message} />
+              ) : (
+                <BotMessage key={index} text={message} />
+              );
+            })}
+          </div>
+        );
+        return "show_options";  // Explicitly return the next state
+      },
     },
     /**
-     * The state to show options to the user.
+     * The state to show messages to the user.
      */
+    display_messages: {
+      path: async (params: any) => {
+        console.log("Displaying messages...");
+  
+        for (const message of messages) {
+          console.log(`Injecting message: ${message}`);
+          await params.injectMessage(message);
+        }
+  
+        console.log("Finished displaying messages. Moving to show_options...");
+        return "show_options";
+      },
+    },
     show_options: {
       message:
         "Here are a few helpful " + "things you can check out to get started:",

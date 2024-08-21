@@ -6,6 +6,43 @@
     font-size: 16px !important;
 }
 
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.user-message-bubble {
+  background-color: rgb(242, 71, 105); /* User's message bubble color */
+  color: #fff;
+  padding: 10px;
+  border-radius: 20px;
+  margin: 5px;
+  max-width: 80%; /* Maximum width of the bubble */
+  width: fit-content; /* Make the bubble width fit its content */
+  align-self: flex-end; /* Right-align user messages */
+  text-align: right; /* Align text inside the bubble to the right */
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Break long words */
+  white-space: pre-wrap; 
+}
+
+.bot-message-bubble {
+  border: 1px solid rgb(242, 71, 105); /* User's message bubble color */
+  color: #000;
+  padding: 10px;
+  border-radius: 20px;
+  margin: 5px;
+  max-width: 80%; /* Maximum width of the bubble */
+  width: fit-content; /* Make the bubble width fit its content */
+  align-self: flex-start; /* Right-align user messages */
+  text-align: right; /* Align text inside the bubble to the right */
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Break long words */
+  white-space: pre-wrap; 
+}
+
+
 /* DottedLoader.css */
 .dotted-loader {
     display: flex;
