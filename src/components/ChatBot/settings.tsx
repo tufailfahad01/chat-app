@@ -1,3 +1,5 @@
+import logo from '../../brand-logo-white.svg'
+
 const ChatBotStyles = {
   headerStyle: { background: "#F24769", color: "#FFFFFF" },
   chatBoxStyle: {
@@ -49,7 +51,18 @@ const ChatBotStyles = {
 
 const ChatBotSettings: any = {
   notification: { disabled: true },
-  header: { title: <b>Gender GP</b>, showAvatar: false },
+  header: { 
+    title: (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <img 
+          src={logo} 
+          alt="Logo" 
+          style={{ width: '120px', height: '120px', marginRight: '10px' }} 
+        />
+      </div>
+    ), 
+    showAvatar: false 
+  },
   footer: {
     text: (
       <p>
