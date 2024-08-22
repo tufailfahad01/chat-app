@@ -160,7 +160,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
 
             // Call the API when "Agent" is selected
             try {
-              const response = await axios.get("http://localhost:3002/chat", {
+              const response = await axios.get("http://localhost:3003/chat", {
                 headers: {
                   Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
                 },
@@ -182,7 +182,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
             await params.injectMessage("Sit tight! I'll send you right there!");
             try {
               const response = await axios.post(
-                "http://localhost:3002/message",
+                "http://localhost:3003/message",
                 {
                   chat_history: [],
                   query: "I want to transition and I am 19 years old",
