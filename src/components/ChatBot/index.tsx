@@ -46,7 +46,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
   ]);
 
   const [agentResponse, setAgentResponse] = useState(null); // State to store API response
-  const [messages, setMessages] = useState(['hello','how are you']);
+  const [messages, setMessages] = useState([]);
   // Define the chatbot's flow.
   const flow = {
     /**
@@ -103,7 +103,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
      * The state to prompt the user for additional help.
      */
     prompt_again: {
-      message: "Do you need any other help?",
+      // message: "Do you need any other help?",
       // Set the options for the user to choose from.
       options: helpOptions,
       // Set the next state to process options.
@@ -137,18 +137,33 @@ const CustomChatBot = ({ onChatToggle }: any) => {
         // Set the link based on the user's input.
         switch (params.userInput) {
           case "Quickstart":
+            await params.injectMessage(
+              "Here is the Quickstart guide"
+            );
             link = "https://react-chatbotify.com/docs/introduction/quickstart/";
             break;
           case "API Docs":
+            await params.injectMessage(
+              "Here is the Api Docs"
+            );
             link = "https://react-chatbotify.com/docs/api/settings";
             break;
           case "Examples":
+            await params.injectMessage(
+              "Here is the Example Docs"
+            );
             link = "https://react-chatbotify.com/docs/examples/basic_form";
             break;
           case "Github":
+            await params.injectMessage(
+              "Here is the Github Url"
+            );
             link = "https://github.com/tjtanjin/react-chatbotify/";
             break;
           case "Discord":
+            await params.injectMessage(
+              "Here is the Discord Url"
+            );
             link = "https://discord.gg/6R4DK4G5Zh";
             break;
           case "Ask Agent?":
@@ -179,13 +194,16 @@ const CustomChatBot = ({ onChatToggle }: any) => {
             return "repeat";
           default:
             const message = params.userInput;
-            await params.injectMessage("Sit tight! I'll send you right there!");
-            try {
+            await params.injectMessage(
+              <div id="loader-wrapper">
+                <DottedLoader />
+              </div>
+            );            try {
               const response = await axios.post(
                 "http://localhost:3003/message",
                 {
-                  chat_history: [],
-                  query: "I want to transition and I am 19 years old",
+                  "chat_history": [],
+                  "query": message
                 },
                 {
                   headers: {
@@ -193,11 +211,20 @@ const CustomChatBot = ({ onChatToggle }: any) => {
                   },
                 }
               );
+              document.getElementById("loader-wrapper")?.remove();
               setAgentResponse(response.data); // Save the response in state
-              await params.injectMessage(
-                "I've received a response from the Agent. What would you like to do next?"
-              );
+              if(response?.data?.reply) {
+                await params.injectMessage(
+                  response.data.reply
+                );
+              } else {
+                await params.injectMessage(
+                  "I've received a response from the Agent. What would you like to do next?"
+                );
+              }
+              
             } catch (error) {
+              document.getElementById("loader-wrapper")?.remove();
               await params.injectMessage(
                 "Sorry, I couldn't reach the Agent at this time."
               );

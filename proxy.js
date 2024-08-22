@@ -5,6 +5,7 @@ const app = express();
 const axios = require('axios');
 
 app.use(cors())
+app.use(express.json());
 
 app.get('/chat', (req, res) => {
     const token = req.headers['authorization'] || req.headers['Authorization'];
