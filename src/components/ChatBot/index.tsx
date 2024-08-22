@@ -45,6 +45,8 @@ const CustomChatBot = ({ onChatToggle }: any) => {
     "Ask Agent?",
   ]);
 
+  const closeOptions=['Close Chat']
+
   const [agentResponse, setAgentResponse] = useState(null); // State to store API response
   const [messages, setMessages] = useState([]);
   // Define the chatbot's flow.
@@ -121,6 +123,10 @@ const CustomChatBot = ({ onChatToggle }: any) => {
       // Set the next state to process options.
       path: "process_options",
     },
+    close_options: {
+      options: closeOptions,
+      path: "process_options"
+    },
     /**
      * The state for processing the user's options.
      *
@@ -166,6 +172,11 @@ const CustomChatBot = ({ onChatToggle }: any) => {
             );
             link = "https://discord.gg/6R4DK4G5Zh";
             break;
+          case 'Close Chat':
+            await params.injectMessage(
+              "Thanks for Using Gender GP. Have a nice day!"
+            );
+            return "prompt_again";
           case "Ask Agent?":
             await params.injectMessage(
               <div id="loader-wrapper">
@@ -183,8 +194,9 @@ const CustomChatBot = ({ onChatToggle }: any) => {
               document.getElementById("loader-wrapper")?.remove();
               setAgentResponse(response.data); // Save the response in state
               await params.injectMessage(
-                "I've received a response from the Agent. What would you like to do next?"
+                "Hi I'm a repesentative from Gender GP. How can I help you?"
               );
+              return "close_options"
             } catch (error) {
               document.getElementById("loader-wrapper")?.remove();
               await params.injectMessage(
@@ -217,6 +229,7 @@ const CustomChatBot = ({ onChatToggle }: any) => {
                 await params.injectMessage(
                   response.data.reply
                 );
+                return 'close_options'
               } else {
                 await params.injectMessage(
                   "I've received a response from the Agent. What would you like to do next?"
