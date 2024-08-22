@@ -13,7 +13,7 @@ COPY . .
 # run npm install to install dependencies
 RUN npm install
 
-EXPOSE 3001 3002
+EXPOSE 3001 3003
 
 # Start both the application and the proxy server
 CMD ["npx", "concurrently", "\"npm run start\"", "\"node proxy.js\""]

@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile
     command: "node proxy.js"
     ports:
-      - "3002:3002"
+      - "3003:3003"
     volumes:
       - .:/app
       - /app/node_modules
