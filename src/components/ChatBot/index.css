@@ -80,4 +80,52 @@
       opacity: 1;
     }
   }
+
+  /* Container for the input field */
+.input-container {
+  position: relative;
+  padding: 10px;
+  max-width: 400px;
+}
+
+/* Input field styling */
+.input-field {
+  width: 100%;
+  padding: 10px 10px 10px 12px;
+  font-size: 16px;
+  border-radius: 20px;
+  width: 300px;
+  border: 2px solid #F24769;
+  outline: none;
+  background-color: transparent;
+  color: #333;
+  transition: border-color 0.3s ease-in-out;
+}
+
+/* Focus state for the input field */
+.input-field:focus {
+  border-color: #F24769;
+}
+
+/* Underline effect for the input field */
+.input-underline {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #F24769;
+  transition: width 0.3s ease-in-out;
+}
+
+.input-field::placeholder {
+  padding-left: 5px;
+}
+
+/* Expand the underline on focus */
+.input-field:focus + .input-underline {
+  width: 100%;
+}
+
   
