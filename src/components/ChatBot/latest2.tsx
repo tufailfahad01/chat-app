@@ -28,6 +28,7 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
     "Ask Agent?",
   ]);
   const [subscriberOptions, setSubscriberOptions] = useState(["Yes", "No"]);
+  const [answersFound, setAnswersFound] = useState(["Yes", "Ask Agent?"]);
   const [closeOptions, setCloseOptions] = useState(["Close Chat"]);
   const [agentResponse, setAgentResponse] = useState(null); // State to store API response
   const [messages, setMessages] = useState([]);
@@ -99,6 +100,12 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
       path: "process_options",
     },
 
+    answer_information: {
+        options: answersFound,
+        chatDisabled: true,
+        path: "process_answer_options"
+    },
+
     process_close_options: {
       transition: { duration: 0 },
       chatDisabled: true,
@@ -106,6 +113,20 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
         await params.injectMessage("Thank you for using GenderGP. Goodbye!");
         return "show_options";
       },
+    },
+
+    process_answer_options: {
+        transition: { duration: 0 },
+        chatDisabled: true,
+        path: async (params: any) => {
+            switch(params.userInput) {
+                case "Yes":
+                    return "process_close_options";
+                case "Ask Agent?":
+                    return "process_options";
+            }
+            return "show_options";
+          },
     },
 
     process_options: {
@@ -122,7 +143,10 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
               await params.injectMessage(
                 "As a frontline healthcare assistant for GenderGP, I'm here to provide information and support regarding gender-affirming care. If you have any questions about gender identity, transitioning, or accessing healthcare services, feel free to ask! 🏳️‍🌈"
               );
-              return "disable_prompt_again";
+              await params.injectMessage(
+                "Did you find your answer?"
+                );
+              return "answer_information";
             case "Ask Agent?":
               await params.injectMessage(
                 <div id="loader-wrapper">
