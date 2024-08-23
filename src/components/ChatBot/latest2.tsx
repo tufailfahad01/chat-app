@@ -33,6 +33,14 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
   const [agentResponse, setAgentResponse] = useState(null); // State to store API response
   const [messages, setMessages] = useState([]);
 
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   // Define the chatbot's flow.
   const flow = {
     start: {
@@ -49,8 +57,25 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
 
     email_information: {
       message: "And would you now share with me your email address?",
-      path: "subscriber_information",
+      path: async (params: any) => {
+        const validEmail = validateEmail(params.userInput);
+        if (!validEmail) {
+            return "handle_invalid_email";
+        }
+        return 'subscriber_information'
+      },
     },
+
+    handle_invalid_email: {
+        message: "Invalid Email Address. Please try again.",
+        path: async (params: any) => {
+          const validEmail = validateEmail(params.userInput);
+          if (!validEmail) {
+              return "handle_invalid_email";
+          }
+          return 'subscriber_information'
+        },
+      },
 
     subscriber_information: {
       message:
