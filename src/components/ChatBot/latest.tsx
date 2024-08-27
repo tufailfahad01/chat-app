@@ -9,7 +9,7 @@ import React from "react";
 const DottedLoader = () => {
   return (
     <div className="dotted-loader">
-      <div style={{ color: "#D3D3D3", fontSize: "12px" }}>
+      <div style={{ color: "#D3D3D3", fontSize: "12px",marginTop:'10px' }}>
         Agent is typing......
       </div>
     </div>
@@ -115,7 +115,7 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
 
     subscriber_information: {
       message:
-        "Greate! And could you please tell us whether you are already a subscriber of GenderGP or not?",
+        "Great! And could you please tell us whether you are already a subscriber of GenderGP or not?",
       chatDisabled: true,
       options: subscriberOptions,
       path: "process_subscriber_options",
