@@ -4,6 +4,7 @@ import ChatBot from "react-chatbotify";
 import { ChatBotSettings, ChatBotStyles } from "./settings";
 import "./index.css";
 import axios from "axios";
+import React from "react";
 
 const DottedLoader = () => {
   return (
@@ -14,6 +15,32 @@ const DottedLoader = () => {
     </div>
   );
 };
+
+
+const LinkifyText = ({ text }:any) => {
+  const urlRegex = /((http|https):\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  const updatedParts = parts.slice(0, parts.length - 2);
+  console.log("parts",updatedParts)
+  return (
+    <p className="chatbot-message">
+      {updatedParts.map((part: any, index: any) =>
+        urlRegex.test(part) ? (
+          <React.Fragment key={index}>
+            <a href={part} target="_blank" rel="noopener noreferrer">
+              {part}
+            </a>
+          </React.Fragment>
+        ) : (
+          <React.Fragment key={index}>
+            {part}
+          </React.Fragment>
+        )
+      )}
+    </p>
+  );
+};
+
 
 /**
  * MyChatBot component is a functional component that renders a chatbot using the
@@ -49,9 +76,14 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
   const flow = {
     start: {
       message:
-        "Hi there! Welcome to GenderGP! Our chat bot is here to connect you with one of our helpful agents! Could you please start off by giving me your full name?",
+        "Hi there! Welcome to GenderGP! Our chat bot is here to connect you with one of our helpful agents!",
       transition: { duration: 1000 },
-      path: "get_email",
+      path: async (params: any) => {
+        await params.injectMessage(
+          'Could you please start off by giving me your full name?'
+        )
+        return 'get_email'
+      },
     },
 
     get_email: {
@@ -234,7 +266,7 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
                 </div>
               );
               try {
-                const response = await axios.post(
+                const response: any = await axios.post(
                   "http://localhost:3003/message",
                   {
                     chat_history: [],
@@ -249,19 +281,23 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
                 document.getElementById("loader-wrapper")?.remove();
                 setAgentResponse(response.data); // Save the response in state
                 if (response?.data?.reply) {
-                  await params.injectMessage(response.data.reply);
-                  // return "enableChat";
+                  const links = response.data.documents.filter((info:any)=> info.url)
+                  const firstLink = links[0]?.url ?? ''
+                  const msg = response.data.reply + ' ' + firstLink
+                  await params.injectMessage(<LinkifyText text={msg} />);
                   return !callAgent ? "find_answers" : "enableChat";
                 } else {
                   await params.injectMessage(
                     "Sorry, I couldn't reach the Agent at this time."
                   );
+                  return 'process_options'
                 }
               } catch (error) {
                 document.getElementById("loader-wrapper")?.remove();
                 await params.injectMessage(
                   "Sorry, I couldn't reach the Agent at this time."
                 );
+                return 'process_options'
               }
           }
         }

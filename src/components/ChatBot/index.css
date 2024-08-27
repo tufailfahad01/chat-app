@@ -128,4 +128,24 @@
   width: 100%;
 }
 
-  
+.chatbot-message {
+  margin-left: 16px;
+  background: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  max-width: 70%;
+  border: 1px solid rgb(242, 71, 105);
+  animation: bot-entry .3s ease-in backwards;
+  margin-top: 8px;
+  padding: 12px 16px;
+  border-radius: 22px;
+  min-height: 20px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  white-space: pre-wrap;
+  gap: 10px;
+}
