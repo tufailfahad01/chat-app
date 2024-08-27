@@ -39,6 +39,11 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
   };
+  
+  const handleUpload = (params: any) => {
+		const files = params.files;
+		// handle files logic here
+	}
 
   // Define the chatbot's flow.
   const flow = {
@@ -101,6 +106,7 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
 
     after_subscribe: {
       message:"Please ask your questions. Please be detailed as much as possible",
+      file: (params:any) => handleUpload(params),
       path: "process_options",
     },
 
@@ -116,6 +122,7 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
       message: "",
       chatDisabled: false,
       options: closeOptions,
+      file: (params:any) => handleUpload(params),
       path: "process_options",
     },
 
@@ -179,6 +186,7 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
     bot_reply: {
       transition: { duration: 0 },
       chatDisabled: true,
+      file: (params:any) => handleUpload(params),
       path: async (params: any) => {
         await params.injectMessage(
           "Hi I'm a repesentative from Gender GP. How can I help you?"
@@ -192,9 +200,6 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
       transition: { duration: 0 },
       chatDisabled: true,
       path: async (params: any) => {
-        console.log(
-          "params",params.userInput
-        )
         if (params.userInput === "End Chat") {
           setCallAgent(false)
           return "process_close_options";
@@ -246,7 +251,6 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
                 if (response?.data?.reply) {
                   await params.injectMessage(response.data.reply);
                   // return "enableChat";
-                  console.log("callAgent", callAgent)
                   return !callAgent ? "find_answers" : "enableChat";
                 } else {
                   await params.injectMessage(

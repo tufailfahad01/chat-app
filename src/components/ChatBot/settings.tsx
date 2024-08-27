@@ -74,7 +74,7 @@ const ChatBotSettings: any = {
       </p>
     ),
   },
-  fileAttachment: { disabled: true },
+  fileAttachment: { showMediaDisplay: true,types: ["file"], accept: ".png, .jpg, .jpeg, .pdf, .doc, .docx" },
   botBubble: {simStream: true},
   tooltip: {
     text: 'Need Help?'
