@@ -20,7 +20,7 @@ const DottedLoader = () => {
 const LinkifyText = ({ text }:any) => {
   const urlRegex = /((http|https):\/\/[^\s]+)/g;
   const parts = text.split(urlRegex);
-  const updatedParts = parts.slice(0, parts.length - 2);
+  const updatedParts = parts?.length > 1 ? parts.slice(0, parts.length - 2) : parts;
   console.log("parts",updatedParts)
   return (
     <p className="chatbot-message">
@@ -183,7 +183,7 @@ const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
 
     process_close_options: {
       message:'Thank you for using GenderGP. Goodbye!',
-      path: 'start'
+      path: 'process_options'
     },
 
     process_answer_options: {
