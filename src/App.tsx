@@ -1,9 +1,5 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import CustomChatBot from './components/ChatBot';
-import CustomChatBotLatest from './components/ChatBot/latest';
-import CustomChatBotLatest2 from './components/ChatBot/latest2';
+import CustomChatBotLatest2 from './components/ChatBot/latest';
 
 function App() {
   return (

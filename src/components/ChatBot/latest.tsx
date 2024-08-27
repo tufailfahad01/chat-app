@@ -8,25 +8,12 @@ import axios from "axios";
 const DottedLoader = () => {
   return (
     <div className="dotted-loader">
-      {/* <div className="dot"></div>
-      <div className="dot"></div>
-      <div className="dot"></div> */}
       <div style={{ color: "#D3D3D3", fontSize: "12px" }}>
         Agent is typing......
       </div>
     </div>
   );
 };
-const UserMessage = ({ text }: any) => {
-  return <div className="user-message-bubble">{text}</div>;
-};
-
-// Component for bot messages
-const BotMessage = ({ text }: any) => {
-  return <div className="bot-message-bubble">{text}</div>;
-};
-
-
 
 /**
  * MyChatBot component is a functional component that renders a chatbot using the
@@ -34,234 +21,251 @@ const BotMessage = ({ text }: any) => {
  *
  * @returns {JSX.Element} The JSX element representing the chatbot.
  */
-const CustomChatBotLatest = ({ onChatToggle }: any) => {
+const CustomChatBotLatest2 = ({ onChatToggle }: any) => {
   // Define the help options for the chatbot.
   const [helpOptions, setHelpOptions] = useState([
-    "Ask About GenderGP",
     "Ask Agent?",
   ]);
-  const [subscriberOptions,setSubscriberOptions] = useState(['Yes','No'])
-  const [closeOptions, setCloseOptions] = useState(['Close Chat'])
-  const [name,setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [subscriberOptions, setSubscriberOptions] = useState(["Yes", "No"]);
+  const [answersFound, setAnswersFound] = useState(["Yes", "Ask Agent?"]);
+  const [closeOptions, setCloseOptions] = useState(["End Chat"]);
   const [agentResponse, setAgentResponse] = useState(null); // State to store API response
-  const [messages, setMessages] = useState([]);
+  const [callAgent,setCallAgent] = useState(false)
 
-  const hanldeInput = (e: any) => {
-    if (e.target.name === 'name') {
-      setName(e.target.value)
-    } else if (e.target.name === 'email') {
-      setEmail(e.target.value)
-    }
-  }
-
-  const handleKeyDown = async (e: any,name:string, params: any) => {
-    if (e.key === "Enter") {
-    console.log("name",name)
-      if(name === 'name') {
-        return 'email_information'
-      } else {
-        return 'subscriber_information'
-      }
-    }
-    return null
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
   };
+
   // Define the chatbot's flow.
   const flow = {
-    /**
-     * The start state of the chatbot.
-     */
     start: {
       message:
         "Hi there! Welcome to GenderGP! Our chat bot is here to connect you with one of our helpful agents! Could you please start off by giving me your full name?",
-        chatDisabled: true,
-      // Set a transition duration for the message.
       transition: { duration: 1000 },
-      // Set the next state to show options.
+      path: "get_email",
+    },
+
+    get_email: {
+      message: "",
+      path: "email_information",
+    },
+
+    email_information: {
+      message: "And would you now share with me your email address?",
       path: async (params: any) => {
-        await params.injectMessage(
-            <div className="input-container">
-                <input onKeyPress={(e: any) => handleKeyDown(e,e.target.name, params)} onChange={hanldeInput} name='name' type="text" className="input-field" placeholder="Enter your name" />
-            </div>
-        );
-        return "do_nothing";  
+        const validEmail = validateEmail(params.userInput);
+        if (!validEmail) {
+            return "handle_invalid_email";
+        }
+        return 'subscriber_information'
       },
     },
-    do_nothing: {
-        message:'',
-        chatDisabled: true,
-    },
-    email_information: {
-        message: 'And would you now share with me your email address?',
-        chatDisabled: true,
+
+    handle_invalid_email: {
+        message: "Invalid Email Address. Please try again.",
         path: async (params: any) => {
-            await params.injectMessage(
-                <div className="input-container">
-                    <input onKeyPress={(e: any) => handleKeyDown(e,e.target.name, params)} onChange={hanldeInput} name='email' type="email" className="input-field" placeholder="Enter your email" />
-                </div>
-            ); 
-            return 'subscriber_information';
-          },
-    },
+          const validEmail = validateEmail(params.userInput);
+          if (!validEmail) {
+              return "handle_invalid_email";
+          }
+          return 'subscriber_information'
+        },
+      },
+
     subscriber_information: {
-        message: 'Greate! And could you please tell us whether you are already a subscriber of GenderGP or not?',
-        options: subscriberOptions,
-        path: 'process_subscriber_options'
-    },
-    show_options: {
       message:
-        "Here are a few helpful " + "things you can check out to get started:",
-      // Set the options for the user to choose from.
-      options: helpOptions,
-      // Set the next state to process options.
-      path: "process_options",
+        "Greate! And could you please tell us whether you are already a subscriber of GenderGP or not?",
+      chatDisabled: true,
+      options: subscriberOptions,
+      path: "process_subscriber_options",
     },
-    /**
-     * The state to prompt the user for additional help.
-     */
-    prompt_again: {
-      // message: "Do you need any other help?",
-      // Set the options for the user to choose from.
-      options: helpOptions,
-      // Set the next state to process options.
-      path: "process_options",
-    },
-    /**
-     * The state for when the user's input is not understood.
-     */
-    unknown_input: {
-      message:
-        "Sorry, I do not understand your message 😢! If you require further assistance, you may click on " +
-        "the Github option and open an issue there or visit our discord.",
-      // Set the options for the user to choose from.
-      options: helpOptions,
-      // Set the next state to process options.
-      path: "process_options",
-    },
-    close_options: {
-      options: closeOptions,
-      path: "process_options"
-    },
+
     process_subscriber_options: {
       transition: { duration: 0 },
       chatDisabled: true,
       path: async (params: any) => {
         switch (params.userInput) {
           case "Yes":
-            await params.injectMessage(
-              "Please ask your Questions!")
-              return "show_options";
+            return "after_subscribe";
           case "No":
-            await params.injectMessage(
-              "Please ask your Questions!")
-              return "show_options";
+            return "after_subscribe";
           default:
-            return "show_options";
+            return "after_subscribe";
         }
+      },
+    },
+
+    after_subscribe: {
+      message:"Please ask your questions. Please be detailed as much as possible",
+      path: "process_options",
+    },
+
+    show_options: {
+      message:
+        "Here are a few helpful " + "things you can check out to get started:",
+      chatDisabled: true,
+      options: helpOptions,
+      path: "process_options",
+    },
+
+    enableChat: {
+      message: "",
+      chatDisabled: false,
+      options: closeOptions,
+      path: "process_options",
+    },
+
+    find_answers: {
+      message: 'Did you find your answer?',
+      chatDisabled: true,
+      options: ['Yes', 'No'],
+      path: 'process_find_answer_options'
+    },
+
+    prompt_again: {
+      options: helpOptions,
+      path: "process_options",
+    },
+    disable_prompt_again: {
+      options: helpOptions,
+      chatDisabled: true,
+      path: "process_options",
+    },
+
+    answer_information: {
+        options: answersFound,
+        chatDisabled: true,
+        path: "process_answer_options"
+    },
+
+    process_close_options: {
+      message:'Thank you for using GenderGP. Goodbye!',
+      path: 'start'
+    },
+
+    process_answer_options: {
+        transition: { duration: 0 },
+        chatDisabled: true,
+        path: async (params: any) => {
+            switch(params.userInput) {
+                case "Yes":
+                    return "process_close_options";
+                case "Ask Agent?":
+                    return "process_options";
+            }
+            return "show_options";
+          },
+    },
+
+    process_find_answer_options: {
+      transition: { duration: 0 },
+      chatDisabled: true,
+      path: async (params: any) => {
+          switch(params.userInput) {
+              case "Yes":
+                  return "process_close_options";
+              case "No":
+                  setCallAgent(true)
+                  return "bot_reply";
+          }
+          return "show_options";
+        },
+  },
+  
+    bot_reply: {
+      transition: { duration: 0 },
+      chatDisabled: true,
+      path: async (params: any) => {
+        await params.injectMessage(
+          "Hi I'm a repesentative from Gender GP. How can I help you?"
+        );
+        return 'enableChat'
       }
     },
-    /**
-     * The state for processing the user's options.
-     *
-     * @param {Object} params - The parameters for the state.
-     * @param {string} params.userInput - The user's input.
-     * @returns {string|Promise<void>} The next state or a promise that resolves to the next state.
-     */
+
     process_options: {
       // Disable chat during processing.
       transition: { duration: 0 },
       chatDisabled: true,
       path: async (params: any) => {
-        let link = "";
-        // Set the link based on the user's input.
-        switch (params.userInput) {
-          case "Ask about GenderGP":
-            await params.injectMessage(
-              "As a frontline healthcare assistant for GenderGP, I'm here to provide information and support regarding gender-affirming care. If you have any questions about gender identity, transitioning, or accessing healthcare services, feel free to ask! 🏳️‍🌈"
-            );
-            break;
-            await params.injectMessage(
-              "Thanks for Using Gender GP. Have a nice day!"
-            );
-            return "prompt_again";
-          case "Ask Agent?":
-            await params.injectMessage(
-              <div id="loader-wrapper">
-                <DottedLoader />
-              </div>
-            );
+        console.log(
+          "params",params.userInput
+        )
+        if (params.userInput === "End Chat") {
+          setCallAgent(false)
+          return "process_close_options";
+        } else {
+          switch (params.userInput) {
+            case "Ask About GenderGP":
+              await params.injectMessage(
+                "As a frontline healthcare assistant for GenderGP, I'm here to provide information and support regarding gender-affirming care. If you have any questions about gender identity, transitioning, or accessing healthcare services, feel free to ask! 🏳️‍🌈"
+              );
+              await params.injectMessage(
+                "Did you find your answer?"
+                );
+              return "answer_information";
+            case "Ask Agent?":
+              await params.injectMessage(
+                <div id="loader-wrapper">
+                  <DottedLoader />
+                </div>
+              );
 
-            // Call the API when "Agent" is selected
-            try {
-              const response = await axios.get("http://localhost:3003/chat", {
-                headers: {
-                  Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
-                },
-              });
-              document.getElementById("loader-wrapper")?.remove();
-              setAgentResponse(response.data); // Save the response in state
+              // Call the API when "Agent" is selected
               await params.injectMessage(
                 "Hi I'm a repesentative from Gender GP. How can I help you?"
               );
-              return "close_options"
-            } catch (error) {
               document.getElementById("loader-wrapper")?.remove();
+              return "enableChat";
+            default:
+              const message = params.userInput;
               await params.injectMessage(
-                "Sorry, I couldn't reach the Agent at this time."
+                <div id="loader-wrapper">
+                  <DottedLoader />
+                </div>
               );
-            }
-            return "repeat";
-          default:
-            const message = params.userInput;
-            await params.injectMessage(
-              <div id="loader-wrapper">
-                <DottedLoader />
-              </div>
-            );            try {
-              const response = await axios.post(
-                "http://localhost:3003/message",
-                {
-                  "chat_history": [],
-                  "query": message
-                },
-                {
-                  headers: {
-                    Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
+              try {
+                const response = await axios.post(
+                  "http://localhost:3003/message",
+                  {
+                    chat_history: [],
+                    query: message,
                   },
-                }
-              );
-              document.getElementById("loader-wrapper")?.remove();
-              setAgentResponse(response.data); // Save the response in state
-              if(response?.data?.reply) {
-                await params.injectMessage(
-                  response.data.reply
+                  {
+                    headers: {
+                      Authorization: "XApHduQiRUp9GTQL6Q2nOuGMq1yF0YXR",
+                    },
+                  }
                 );
-                return 'close_options'
-              } else {
+                document.getElementById("loader-wrapper")?.remove();
+                setAgentResponse(response.data); // Save the response in state
+                if (response?.data?.reply) {
+                  await params.injectMessage(response.data.reply);
+                  // return "enableChat";
+                  console.log("callAgent", callAgent)
+                  return !callAgent ? "find_answers" : "enableChat";
+                } else {
+                  await params.injectMessage(
+                    "Sorry, I couldn't reach the Agent at this time."
+                  );
+                }
+              } catch (error) {
+                document.getElementById("loader-wrapper")?.remove();
                 await params.injectMessage(
-                  "I've received a response from the Agent. What would you like to do next?"
+                  "Sorry, I couldn't reach the Agent at this time."
                 );
               }
-              
-            } catch (error) {
-              document.getElementById("loader-wrapper")?.remove();
-              await params.injectMessage(
-                "Sorry, I couldn't reach the Agent at this time."
-              );
-            }
-          // return "unknown_input";
+          }
         }
-        // Inject a message and return the next state.
-        return "repeat";
       },
     },
-    /**
-     * The state to prompt the user for additional help.
-     */
+
     repeat: {
-      // Set a transition duration for the message.
       transition: { duration: 1000 },
-      // Set the next state to prompt again.
       path: "prompt_again",
     },
   };
@@ -271,4 +275,4 @@ const CustomChatBotLatest = ({ onChatToggle }: any) => {
   );
 };
 
-export default CustomChatBotLatest;
+export default CustomChatBotLatest2;
